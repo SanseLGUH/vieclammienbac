@@ -1,0 +1,15 @@
+[package]
+name = "meta"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+vmb_core = { path = "../core" }
+
+sqlx = { version = "0.8.6", features = ["chrono", "derive", "postgres", "runtime-tokio", "uuid"] }
+
+uuid = { version = "1", features = ["v4", "serde"] }
+
+actix-cors = "0.7.1"
+
+actix-web = { version = "4.13.0" }

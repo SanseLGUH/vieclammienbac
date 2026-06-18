@@ -1,0 +1,37 @@
+[package]
+name = "better_backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+vmb_core = { path = "../core" }
+
+tokio = { version = "1.52.3", features = ["full"] }
+async-trait = "0.1.89"
+
+tracing-subscriber = "0.3.23"
+tracing = "0.1.44"
+
+
+actix-cors = "0.7.1"
+actix-web = { version = "4.13.0", features = ["cookies"] }
+
+sqlx = { version = "0.8.6", features = ["chrono", "derive", "postgres", "runtime-tokio", "uuid"] }
+
+serde = { version = "1.0.228", features = ["derive"] }
+chrono = { version = "0.4.45", features = ["serde"] }
+uuid = { version = "1.23.2", features = ["serde", "v4"] }
+serde_json = "1.0.150"
+rand = "0.10.1"
+futures = "0.3.32"
+
+
+argon2 = "0.5.3"
+password-hash = "0.6.0"
+aes-gcm = "0.10.3"
+base64 = "0.22.1"
+sha2 = "0.10.9"
+hmac = "0.12.1"
+p256 = "0.13.2"
+futures-util = "0.3.32"
+url = "2.5.8"
