@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/resources/toolsfavicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d0d0d;
+            --surface: #141414;
+            --surface2: #1a1a1a;
+            --border: rgba(255,255,255,0.07);
+            --border-hover: rgba(255,255,255,0.15);
+            --text: #f5f5f5;
+            --muted: #555;
+            --muted2: #888;
+            --accent: #e8ff47;
+            --accent-dim: rgba(232,255,71,0.1);
+            --accent-dim2: rgba(232,255,71,0.05);
+            --danger: #ff4757;
+            --radius: 2px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .layout {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 48px 32px 80px;
+            overflow: hidden;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand { display: flex; flex-direction: column; gap: 4px; }
+
+        .brand-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+
+        .brand-sub { font-size: 11px; color: var(--muted2); letter-spacing: 0.05em; }
+
+        .header-meta { display: flex; align-items: center; gap: 16px; }
+
+        .file-count { font-size: 11px; color: var(--muted2); letter-spacing: 0.05em; }
+
+        .btn-ghost {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted2);
+            cursor: pointer;
+            letter-spacing: 0.05em;
+            transition: all 0.15s;
+        }
+
+        .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+
+        .upload-zone {
+            border: 1px dashed var(--border);
+            padding: 28px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 32px;
+            transition: all 0.2s;
+            background: var(--surface);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            display: block;
+        }
+
+        .upload-zone::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--accent-dim2);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .upload-zone:hover::before,
+        .upload-zone.dragging::before { opacity: 1; }
+
+        .upload-zone:hover,
+        .upload-zone.dragging { border-color: var(--accent); }
+
+        .upload-zone input { display: none; }
+
+        .upload-icon { font-size: 22px; margin-bottom: 8px; opacity: 0.4; }
+
+        .upload-text { font-size: 12px; color: var(--muted2); letter-spacing: 0.05em; }
+
+        .upload-text span { color: var(--accent); }
+
+        .upload-progress {
+            display: none;
+            margin-bottom: 20px;
+            gap: 8px;
+            flex-direction: column;
+        }
+
+        .upload-progress.active { display: flex; }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 11px;
+            color: var(--muted2);
+        }
+
+        .progress-bar-wrap {
+            flex: 1;
+            height: 2px;
+            background: var(--surface2);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.15s;
+        }
+
+        .files-list { display: flex; flex-direction: column; gap: 1px; }
+
+        .file-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            transition: all 0.15s;
+            animation: fadeIn 0.2s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .file-item:hover { border-color: var(--border-hover); background: var(--surface2); }
+
+        .file-info { overflow: hidden; }
+
+        .file-name {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text);
+            margin-bottom: 3px;
+        }
+
+        .file-meta { font-size: 10px; color: var(--muted); letter-spacing: 0.04em; }
+
+        .file-actions { display: flex; gap: 6px; align-items: center; }
+
+        .btn-share {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 6px 14px;
+            background: var(--accent-dim);
+            border: 1px solid rgba(232,255,71,0.2);
+            color: var(--accent);
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-share:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        .btn-share.copied {
+            background: rgba(100,255,150,0.1);
+            border-color: rgba(100,255,150,0.3);
+            color: #64ff96;
+        }
+
+        .btn-dl {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 6px 10px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted2);
+            cursor: pointer;
+            text-decoration: none;
+            letter-spacing: 0.03em;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-dl:hover { border-color: var(--border-hover); color: var(--text); }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--surface2);
+            border: 1px solid var(--border-hover);
+            padding: 10px 20px;
+            font-size: 12px;
+            color: var(--accent);
+            letter-spacing: 0.04em;
+            opacity: 0;
+            transition: all 0.2s;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            letter-spacing: 0.05em;
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .empty-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.3; }
+
+        .error-msg {
+            padding: 14px 16px;
+            background: rgba(255,71,87,0.07);
+            border: 1px solid rgba(255,71,87,0.2);
+            color: var(--danger);
+            font-size: 12px;
+            letter-spacing: 0.03em;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border-hover);
+            padding: 28px;
+            width: 100%;
+            max-width: 480px;
+            margin: 20px;
+            transform: translateY(12px);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.open .modal { transform: translateY(0); }
+
+        .modal-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+
+        .modal-file {
+            font-size: 11px;
+            color: var(--muted2);
+            margin-bottom: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .url-box { display: flex; gap: 8px; margin-bottom: 16px; }
+
+        .url-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--muted2);
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 8px 12px;
+            outline: none;
+            letter-spacing: 0.02em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .url-input:focus { border-color: var(--border-hover); }
+
+        .btn-copy {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 8px 16px;
+            background: var(--accent);
+            border: none;
+            color: #000;
+            cursor: pointer;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-copy:hover { background: #d4eb3a; }
+        .btn-copy.copied { background: #64ff96; }
+
+        .modal-actions { display: flex; justify-content: space-between; align-items: center; }
+
+        .modal-dl-link {
+            font-size: 11px;
+            color: var(--muted2);
+            text-decoration: none;
+            letter-spacing: 0.03em;
+            transition: color 0.15s;
+        }
+
+        .modal-dl-link:hover { color: var(--text); }
+
+        .btn-close {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted2);
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            transition: all 0.15s;
+        }
+
+        .btn-close:hover { border-color: var(--border-hover); color: var(--text); }
+
+        @media (max-width: 600px) {
+            .layout { padding: 24px 16px 60px; }
+            header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .file-item { grid-template-columns: 1fr auto; }
+            .btn-dl { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <header>
+        <div class="brand">
+            <div class="brand-name">/ drive</div>
+            <div class="brand-sub">drive.vieclammienbac.com</div>
+        </div>
+        <div class="header-meta">
+            <span class="file-count" id="file-count">—</span>
+            <button class="btn-ghost" onclick="loadFiles()">↻ refresh</button>
+        </div>
+    </header>
+
+    <label class="upload-zone" id="upload-zone">
+        <div class="upload-icon">⬆</div>
+        <div class="upload-text">drop files here or <span>click to upload</span></div>
+        <input type="file" multiple onchange="handleFiles(this.files)" id="file-input">
+    </label>
+
+    <div class="upload-progress" id="upload-progress"></div>
+    <div id="files-container"></div>
+</div>
+
+<!-- Share modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal">
+        <div class="modal-title">share file</div>
+        <div class="modal-file" id="modal-filename"></div>
+        <div class="url-box">
+            <input class="url-input" id="share-url" readonly>
+            <button class="btn-copy" id="copy-btn" onclick="copyUrl()">copy</button>
+        </div>
+        <div class="modal-actions">
+            <a class="modal-dl-link" id="modal-dl-link" href="#">↓ download instead</a>
+            <button class="btn-close" onclick="closeModal()">close</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const BASE = 'https://drive.vieclammienbac.com';
+    const CHUNK_SIZE = 5 * 1024 * 1024; // 16MB — better throughput than 5MB
+    const PARALLEL = 6;                   // 4 concurrent chunk uploads
+
+    function formatSize(bytes) {
+        if (!bytes) return '0 B';
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    async function loadFiles() {
+        const container = document.getElementById('files-container');
+        const countEl = document.getElementById('file-count');
+        container.innerHTML = '';
+        countEl.textContent = '...';
+
+        try {
+            const res = await fetch(`${BASE}/list`);
+            const files = await res.json();
+            countEl.textContent = `${files.length} file${files.length !== 1 ? 's' : ''}`;
+
+            if (!files.length) {
+                container.innerHTML = `<div class="empty"><div class="empty-icon">◻</div>no files yet</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            files.forEach((f, i) => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.style.animationDelay = `${i * 30}ms`;
+                const shareUrl = `${BASE}/download?id=${f.id}`;
+                item.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-name" title="${f.name}">${f.name}</div>
+                        <div class="file-meta">${formatSize(f.size)}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn-share" onclick="openShareModal('${f.id}', '${f.name.replace(/'/g, "\\'")}', '${shareUrl}')">share ↗</button>
+                        <a class="btn-dl" href="${shareUrl}" download title="Download">↓</a>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        } catch (e) {
+            container.innerHTML = `<div class="error-msg">failed to load files — ${e.message}</div>`;
+            countEl.textContent = 'error';
+        }
+    }
+
+    function openShareModal(id, name, url) {
+        document.getElementById('modal-filename').textContent = name;
+        document.getElementById('share-url').value = url;
+        document.getElementById('modal-dl-link').href = url;
+        document.getElementById('copy-btn').textContent = 'copy';
+        document.getElementById('copy-btn').classList.remove('copied');
+        document.getElementById('modal-overlay').classList.add('open');
+    }
+
+    function closeModal(e) {
+        if (!e || e.target === document.getElementById('modal-overlay')) {
+            document.getElementById('modal-overlay').classList.remove('open');
+        }
+    }
+
+    function copyUrl() {
+        const url = document.getElementById('share-url').value;
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = document.getElementById('copy-btn');
+            btn.textContent = 'copied!';
+            btn.classList.add('copied');
+            showToast('link copied to clipboard');
+            setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+        });
+    }
+
+    // ── Drag and drop ─────────────────────────────────────────────────────────
+    const zone = document.getElementById('upload-zone');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragging'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
+    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragging'); handleFiles(e.dataTransfer.files); });
+
+    function handleFiles(files) { [...files].forEach(uploadFile); }
+
+    // ── Active uploads registry ───────────────────────────────────────────────
+    const activeUploads = new Map(); // uid → { uploadId, objectPath, xhrs }
+
+    // ── Abort helper ─────────────────────────────────────────────────────────
+    async function abortUpload(uploadId, objectPath) {
+        const params = new URLSearchParams({ upload_id: uploadId, object_path: objectPath });
+        try { await fetch(`${BASE}/upload/abort?${params}`, { method: 'DELETE' }); } catch (_) {}
+    }
+
+    window.addEventListener('beforeunload', () => {
+        activeUploads.forEach(({ uploadId, objectPath }) => {
+            const params = new URLSearchParams({ upload_id: uploadId, object_path: objectPath });
+            navigator.sendBeacon(`${BASE}/upload/abort?${params}`, '');
+        });
+    });
+
+    // ── Upload a single part via XHR (gives us per-chunk progress events) ────
+    function uploadPart(uploadId, objectPath, partNumber, offset, end, file, onProgress, xhrRegistry) {
+        return new Promise((resolve, reject) => {
+            const slice = file.slice(offset, end);
+            const params = new URLSearchParams({
+                upload_id: uploadId,
+                object_path: objectPath,
+                part_number: partNumber,
+            });
+
+            const xhr = new XMLHttpRequest();
+            xhrRegistry.add(xhr);
+
+            // fired repeatedly as bytes land on the server
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) onProgress(e.loaded);
+            };
+
+            xhr.onload = () => {
+                xhrRegistry.delete(xhr);
+                if (xhr.status === 200) {
+                    onProgress(end - offset); // guarantee 100% for this chunk
+                    try { resolve(JSON.parse(xhr.responseText)); }
+                    catch (e) { reject(new Error('bad JSON from server')); }
+                } else {
+                    let msg = `part ${partNumber} failed: ${xhr.status}`;
+                    try { msg = JSON.parse(xhr.responseText).error ?? msg; } catch (_) {}
+                    reject(new Error(msg));
+                }
+            };
+
+            xhr.onerror = () => { xhrRegistry.delete(xhr); reject(new Error(`part ${partNumber} network error`)); };
+            xhr.onabort = () => { xhrRegistry.delete(xhr); reject(new Error('aborted')); };
+
+            xhr.open('PUT', `${BASE}/upload/chunk?${params}`);
+            xhr.setRequestHeader('Content-Range', `bytes ${offset}-${end - 1}/${file.size}`);
+            xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+            xhr.send(slice);
+        });
+    }
+
+    // ── Main upload function ──────────────────────────────────────────────────
+    async function uploadFile(file) {
+        const progressWrap = document.getElementById('upload-progress');
+        progressWrap.classList.add('active');
+
+        const uid = Date.now() + Math.random();
+        const item = document.createElement('div');
+        item.className = 'progress-item';
+        item.innerHTML = `
+            <span style="color:var(--muted2);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px">${file.name}</span>
+            <div class="progress-bar-wrap"><div class="progress-bar" id="bar-${uid}"></div></div>
+            <span style="font-size:10px;color:var(--muted);min-width:64px;text-align:right" id="pct-${uid}">init…</span>
+            <button id="abort-${uid}" style="font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;background:transparent;border:1px solid rgba(255,71,87,0.3);color:var(--danger);cursor:pointer;flex-shrink:0" title="abort">✕</button>
+        `;
+        progressWrap.appendChild(item);
+
+        const barEl  = () => document.getElementById(`bar-${uid}`);
+        const pctEl  = () => document.getElementById(`pct-${uid}`);
+
+        function setProgress(uploaded, total, speed) {
+            const p = Math.min(100, Math.round((uploaded / total) * 100));
+            barEl().style.width = p + '%';
+            pctEl().textContent = `${p}%${speed ? ' · ' + speed : ''}`;
+        }
+
+        function setStatus(msg, color = 'var(--muted)') {
+            pctEl().textContent = msg;
+            pctEl().style.color = color;
+        }
+
+        let aborted = false;
+        // tracks live XHR objects so we can abort them immediately
+        const xhrRegistry = new Set();
+
+        document.getElementById(`abort-${uid}`).addEventListener('click', async () => {
+            if (aborted) return;
+            aborted = true;
+
+            // kill all in-flight XHRs immediately
+            xhrRegistry.forEach(x => x.abort());
+            xhrRegistry.clear();
+
+            const upload = activeUploads.get(uid);
+            if (upload) {
+                await abortUpload(upload.uploadId, upload.objectPath);
+                activeUploads.delete(uid);
+            }
+
+            setStatus('aborted', 'var(--muted)');
+            barEl().style.background = 'var(--muted)';
+            document.getElementById(`abort-${uid}`).disabled = true;
+            setTimeout(() => {
+                item.remove();
+                if (!progressWrap.children.length) progressWrap.classList.remove('active');
+            }, 800);
+        });
+
+        try {
+            // Step 1: init
+            const initRes = await fetch(`${BASE}/upload/init`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: file.name }),
+            });
+            if (!initRes.ok) throw new Error('init failed');
+            const { upload_id, object_path } = await initRes.json();
+
+            activeUploads.set(uid, { uploadId: upload_id, objectPath: object_path, xhrRegistry });
+
+            // Step 2: build chunk list
+            const chunks = [];
+            let offset = 0, partNum = 1;
+            while (offset < file.size) {
+                const end = Math.min(offset + CHUNK_SIZE, file.size);
+                chunks.push({ partNumber: partNum++, offset, end });
+                offset = end;
+            }
+
+            // per-chunk progress in bytes — summed for the overall bar
+            const chunkProgress = new Array(chunks.length).fill(0);
+            const parts = [];
+            let idx = 0;
+            const startTime = Date.now();
+
+            function onChunkProgress(chunkIdx, loaded) {
+                chunkProgress[chunkIdx] = loaded;
+                const totalUploaded = chunkProgress.reduce((a, b) => a + b, 0);
+                const elapsed = (Date.now() - startTime) / 1000;
+                const mbps = elapsed > 0.5
+                    ? ((totalUploaded / elapsed) / 1024 / 1024).toFixed(1) + ' MB/s'
+                    : '';
+                setProgress(totalUploaded, file.size, mbps);
+            }
+
+            // worker pulls chunks off the queue and uploads them
+            async function worker() {
+                while (idx < chunks.length) {
+                    if (aborted) return;
+                    const chunk = chunks[idx++];
+                    const chunkIdx = chunk.partNumber - 1;
+
+                    const data = await uploadPart(
+                        upload_id, object_path,
+                        chunk.partNumber, chunk.offset, chunk.end,
+                        file,
+                        (loaded) => onChunkProgress(chunkIdx, loaded),
+                        xhrRegistry,
+                    );
+
+                    if (aborted) return;
+                    parts.push({ part_number: data.part_number, e_tag: data.e_tag });
+                }
+            }
+
+            // spin up PARALLEL workers; they share the idx counter via closure
+            await Promise.all(
+                Array.from({ length: Math.min(PARALLEL, chunks.length) }, worker)
+            );
+
+            if (aborted) return;
+
+            // Step 3: complete
+            setStatus('finishing…', 'var(--muted2)');
+            const sorted = parts.sort((a, b) => a.part_number - b.part_number);
+            const completeRes = await fetch(`${BASE}/upload/complete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ upload_id, object_path, parts: sorted }),
+            });
+            if (!completeRes.ok) throw new Error('complete failed');
+
+            activeUploads.delete(uid);
+            setStatus('✓', 'var(--accent)');
+            barEl().style.background = 'var(--accent)';
+            document.getElementById(`abort-${uid}`).style.display = 'none';
+
+            setTimeout(() => {
+                item.remove();
+                if (!progressWrap.children.length) progressWrap.classList.remove('active');
+                loadFiles();
+            }, 800);
+
+        } catch (e) {
+            if (aborted) return;
+            setStatus('✗', 'var(--danger)');
+            barEl().style.background = 'var(--danger)';
+            showToast(`upload failed — ${e.message}`);
+            activeUploads.delete(uid);
+        }
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    loadFiles();
+</script>
+
+</body>
+</html>

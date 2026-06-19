@@ -1,0 +1,214 @@
+/* ── salary.css ── */
+
+.salary-section {
+  padding: 0 0 8px;
+}
+
+/* ── Graph ── */
+.graph-section {
+  width: 100%;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 24px 32px 0;
+  padding: 24px 2px 7px;
+}
+
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 15px;
+}
+
+.graph-ranks { display: flex; gap: clamp(20px, 5vw, 40px); flex-wrap: wrap; }
+
+.graph-rank-block { display: flex; flex-direction: column; min-width: 120px; }
+
+.graph-rank-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.graph-rank-value {
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 800;
+  color: #e8b84b;
+  line-height: 1;
+}
+
+.graph-rank-value.secondary { color: #fff; }
+
+.graph-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 4px;
+  align-self: flex-start;
+}
+
+.graph-tab {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.4);
+  background: transparent;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: 'Nunito', sans-serif;
+}
+
+.graph-tab.active {
+  background: #e8b84b;
+  color: #1a1400;
+  box-shadow: 0 4px 12px rgba(232,184,75,0.3);
+}
+
+.graph-chart-wrap {
+  position: relative;
+  height: 200px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+canvas#salaryChart { width: 100% !important; height: 100% !important; }
+
+.graph-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  background: rgba(29,29,29,0.8);
+  z-index: 10;
+}
+
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top-color: #e8b84b;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.graph-tooltip {
+  position: absolute;
+  background: #1d1d1d;
+  border: 1px solid #e8b84b;
+  border-radius: 8px;
+  padding: 8px 12px;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  display: none;
+}
+
+.tt-label { font-size: 10px; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
+.tt-val   { font-size: 14px; font-weight: 800; color: #e8b84b; }
+
+.graph-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 20px;
+  padding: 20px 28px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+}
+
+.graph-stat { display: flex; flex-direction: column; gap: 4px; }
+.graph-stat-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; }
+.graph-stat-val { font-size: 18px; font-weight: 800; color: #fff; }
+.graph-stat-val.highlight { color: #e8b84b; }
+
+/* ── Period List ── */
+.periods-section {
+  padding: 0 2px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.periods-title {
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 16px 0 4px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.period-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.2s;
+}
+
+.period-card:hover { border-color: rgba(232,184,75,0.2); }
+
+.period-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.period-dates { display: flex; flex-direction: column; gap: 2px; }
+.period-range { font-size: 12px; color: rgba(255,255,255,0.5); }
+.period-type  { font-size: 10px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.period-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.period-total { font-size: 18px; font-weight: 800; color: #fff; }
+.period-status { font-size: 11px; font-weight: 700; }
+.period-bonus { font-size: 11px; color: #66ffb2; font-weight: 700; }
+
+.period-days {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.day-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 44px;
+}
+
+.day-chip.day-off { opacity: 0.35; }
+.day-name { font-size: 9px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.06em; }
+.day-amt  { font-size: 11px; font-weight: 700; color: #e8b84b; }
+.day-chip.day-off .day-amt { color: rgba(255,255,255,0.3); }
+
+.period-rating { display: flex; align-items: center; gap: 6px; }
+.rating-stars { color: #e8b84b; font-size: 12px; letter-spacing: 1px; }
+.rating-val   { font-size: 11px; color: rgba(255,255,255,0.3); }
+
+@media (max-width: 600px) {
+  .graph-section { padding: 20px 16px 0; }
+  .graph-stats { grid-template-columns: 1fr 1fr; padding: 16px; gap: 12px; }
+  .graph-tabs { width: 100%; }
+  .graph-tab { flex: 1; text-align: center; }
+  .periods-section { padding: 0 16px 20px; }
+}

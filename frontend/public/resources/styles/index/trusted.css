@@ -1,0 +1,88 @@
+        .trusted_by {
+          max-width: 1370px;
+          margin: 0 auto;
+          background-color: #1d1d1d;
+          padding: 48px 0 52px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .trusted-label {
+          display: block;
+          text-align: center;
+          font-family: 'Bungee', sans-serif;
+          font-size: 11px;
+          letter-spacing: 0.35em;
+          color: #BFA054;
+          text-transform: uppercase;
+          margin-bottom: 28px;
+        }
+
+        .marquee-wrapper {
+          width: 100%;
+          max-width: 1125px;
+          margin: 0 auto;
+          overflow: hidden;
+          mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+        }
+
+        .marquee-track {
+          display: flex;
+          align-items: center;
+          width: max-content;
+          animation: marqueeScroll 50s linear infinite;
+        }
+
+        .marquee-track.reverse {
+          animation: marqueeScrollReverse 65s linear infinite;
+        }
+
+        .marquee-wrapper:nth-child(4) .marquee-track {
+          animation-duration: 80s;
+        }
+
+        .marquee-track:hover,
+        .marquee-track.reverse:hover {
+          animation-play-state: paused;
+        }
+
+        @keyframes marqueeScroll {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+
+        @keyframes marqueeScrollReverse {
+          from { transform: translateX(-50%); }
+          to   { transform: translateX(0); }
+        }
+
+        .logo-item {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 32px;
+          height: 64px;
+          flex-shrink: 0;
+          border-right: 1px solid rgba(191,160,84,0.08);
+          opacity: 0.45;
+          cursor: default;
+          transition: opacity 0.3s;
+        }
+
+        .logo-item:hover { opacity: 1; }
+
+        .logo-item img {
+          height: 30px;
+          width: auto;
+          max-width: 100px;
+          object-fit: contain;
+          filter: brightness(0) invert(1);
+          transition: filter 0.3s;
+        }
+
+        .logo-item:hover img {
+          filter: brightness(0) saturate(100%) invert(72%) sepia(40%) saturate(500%) hue-rotate(5deg) brightness(95%);
+        }

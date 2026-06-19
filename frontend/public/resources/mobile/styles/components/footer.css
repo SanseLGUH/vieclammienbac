@@ -1,0 +1,121 @@
+.site-footer {
+  background-color: #0d1b4b;
+  padding: 40px 20px;
+}
+
+.site-footer a {
+  color: #ffff; /* Blue text */
+  text-decoration: none; /* Remove underline */
+  background-color: transparent;
+}
+
+.footer-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  text-align: left;
+}
+
+.footer-column {
+  flex: 1;
+  color: #fff;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.footer-column h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.footer-column ul {
+  padding-left: 18px;
+}
+
+.footer-column li {
+  margin-bottom: 10px;
+}
+
+.footer-column p {
+  margin-bottom: 8px;
+}
+
+.footer-column img {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 24px 12px;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .footer-column {
+    min-width: unset;
+    max-width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .footer-column:last-child {
+    border-bottom: none;
+  }
+
+  /* Accordion toggle */
+  .footer-column h4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 16px 0;
+    margin-bottom: 0;
+    font-size: 15px;
+    user-select: none;
+  }
+
+  .footer-column h4::after {
+    content: '+';
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1;
+    transition: transform 0.25s ease;
+  }
+
+  .footer-column.open h4::after {
+    transform: rotate(45deg);
+  }
+
+  .footer-column ul,
+  .footer-column p,
+  .footer-column img {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+    margin-bottom: 0;
+  }
+
+  .footer-column.open ul,
+  .footer-column.open p,
+  .footer-column.open img {
+    max-height: 500px;
+    opacity: 1;
+    margin-bottom: 8px;
+  }
+
+  .footer-column.open ul {
+    padding-bottom: 12px;
+  }
+}

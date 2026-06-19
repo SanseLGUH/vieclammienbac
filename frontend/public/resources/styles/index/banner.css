@@ -1,0 +1,139 @@
+/* ── Banner ── */
+.banner-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 60px;
+    gap: 40px;
+    animation: fadeIn 0.7s ease both;
+
+    margin-bottom: 20px;
+}
+
+.banner-left {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.banner-label {
+    font-family: 'Bungee', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: #4776E6;
+    text-transform: uppercase;
+}
+
+.banner-title {
+    font-family: 'Bungee', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+}
+
+.banner-sub {
+    font-family: sans-serif;
+    font-size: 15px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 400;
+    max-width: 420px;
+    line-height: 1.6;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 40px;
+    margin-top: 4px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stat-num {
+    font-family: 'Bungee', sans-serif;
+    font-size: 22px;
+    color: #fff;
+}
+
+.stat-label {
+    font-family: sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.banner-right {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+.license-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.license-img {
+    width: 140px;
+    height: 200px;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.license-card:hover .license-img {
+    border-color: rgba(71, 118, 230, 0.7);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.license-label {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    text-align: center;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    max-width: 140px;
+    line-height: 1.4;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+    .banner {
+        height: auto;
+        min-height: 320px;
+    }
+
+    .banner-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 40px 28px;
+        gap: 24px;
+    }
+
+    .banner-right { display: none; }
+    .banner-stats { gap: 24px; }
+}
+
+@media (max-width: 480px) {
+    .banner-inner { padding: 32px 20px; }
+    .banner-stats { gap: 18px; flex-wrap: wrap; }
+    .stat-num { font-size: 18px; }
+    .banner-sub { font-size: 13px; }
+}

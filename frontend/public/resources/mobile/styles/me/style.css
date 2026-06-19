@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+  margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.body {
+  background-color: #1d1d1d;
+}
+
+@media (max-width: 600px) {
+  .main-panel { width: 100%; margin: 0; border-radius: 0; }
+}
