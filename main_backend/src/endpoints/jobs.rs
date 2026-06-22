@@ -25,9 +25,9 @@ async fn search(query: web::Query<SearchQuery>) -> impl Responder {
     let limit = query.limit.unwrap_or(10);
     let offset = query.start.unwrap_or(0);
 
-    match Job::search(pool, query.d, limit, offset).await {
+    match Job::search(pool, &query.d, limit, offset).await {
         Ok(r) => HttpResponse::Ok().json(r),
-        Err(msg) => HttpResponse::BadRequest().body(msg)
+        Err(_) => HttpResponse::BadRequest().finish()
     }
 }
 
