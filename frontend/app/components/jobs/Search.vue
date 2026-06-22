@@ -2,8 +2,6 @@
 const name = defineModel({ default: '' })
 </script>
 
-<!-- MAKE SMART SEARCH NOT ONLY BY JOB-NAME USER WILL CAN TYPE SALARY TITLE ETC -->
-
 <template>
   <input
     class="search-input"

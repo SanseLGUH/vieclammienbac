@@ -5,10 +5,9 @@
   const JOBS_PER_PAGE = 6
 
   const page   = ref(Number(route.query.page)   || 1)
-  const radius = ref(Number(route.query.radius) || 5)
+  const radius = ref(Number(route.query.radius) || 25)
   const offset = computed(() => (page.value - 1) * JOBS_PER_PAGE)
 
-  // real user location — null until resolved (or denied)
   const userLat  = ref(null)
   const userLng  = ref(null)
   const geoError = ref(null)
@@ -39,7 +38,6 @@
     { server: false }
   )
 
-  // nearby jobs — only fetch once we actually have real coords
   const { data: nearbyData, refresh: refreshNearby } = await useFetch(
     () => `${apiBase}/jobs?limit=${JOBS_PER_PAGE}&start=${offset.value}&geo=${userLat.value},${userLng.value},${radius.value}`,
     {
@@ -92,6 +90,37 @@
 
   const hasMore    = computed(() => jobs.value.length === JOBS_PER_PAGE)
   const totalPages = computed(() => hasMore.value ? page.value + 1 : page.value)
+
+  // ---- Search ----
+  const search = ref('')
+  const isSearching = computed(() => search.value.trim().length > 0)
+
+  const { data: searchData, pending: searchPending, refresh: refreshSearch } = await useFetch(
+    () => `${apiBase}/jobs/search?d=${encodeURIComponent(search.value.trim())}`,
+    { server: false, immediate: false }
+  )
+
+  const searchedJobs = ref([])
+
+  watch(searchData, (raw) => {
+    if (!raw) return
+    searchedJobs.value = raw.map(j => ({ ...j }))
+  }, { immediate: true })
+
+  let searchDebounce = null
+  watch(search, (val) => {
+    if (searchDebounce) clearTimeout(searchDebounce)
+
+    if (!val.trim()) {
+      searchedJobs.value = []
+      return
+    }
+
+    searchDebounce = setTimeout(() => {
+      refreshSearch()
+    }, 400) // debounce so we don't fire a request on every keystroke
+  })
+
   useHead({ title: 'Việc Làm Miền Bắc – Tìm việc nhanh' })
 </script>
 
@@ -123,38 +152,51 @@
         <JobsMainFilterSettings />
       </div>
 
-      <JobsSearch />
+      <JobsSearch v-model="search" />
 
-      <div v-if="pending" class="state-msg">Đang tải...</div>
+      <template v-if="isSearching">
+        <div v-if="searchPending" class="state-msg">Đang tìm kiếm...</div>
+        <template v-else>
+          <div class="section-divider">
+            <span>Kết quả tìm kiếm cho “{{ search }}”</span>
+          </div>
+          <JobsList v-if="searchedJobs.length" :jobs="searchedJobs" />
+          <div v-else class="state-msg">Không tìm thấy việc làm phù hợp.</div>
+        </template>
+      </template>
 
       <template v-else>
-        <div class="page-settings">
-          <JobsPageListSettings />
-          <JobsPageNextPrev
-            class="hide-in-mobile"
-            v-model="page"
-            :total="totalPages"
-            dots-color="#54B5FF"
-            nav-color="#54B5FF"
-          />
-        </div>
+        <div v-if="pending" class="state-msg">Đang tải...</div>
 
-        <JobsList :jobs="NearbyJobs" />
+        <template v-else>
+          <div class="page-settings">
+            <JobsPageListSettings />
+            <JobsPageNextPrev
+              class="hide-in-mobile"
+              v-model="page"
+              :total="totalPages"
+              dots-color="#54B5FF"
+              nav-color="#54B5FF"
+            />
+          </div>
 
-        <div class="section-divider">
-          <span>Tất cả việc làm</span>
-        </div>
+          <JobsList :jobs="NearbyJobs" />
 
-        <JobsList :jobs="jobs" />
+          <div class="section-divider">
+            <span>Tất cả việc làm</span>
+          </div>
 
-        <div class="bottom-nav">
-          <JobsPageNextPrev
-            v-model="page"
-            :total="totalPages"
-            dots-color="#54B5FF"
-            nav-color="#54B5FF"
-          />
-        </div>
+          <JobsList :jobs="jobs" />
+
+          <div class="bottom-nav">
+            <JobsPageNextPrev
+              v-model="page"
+              :total="totalPages"
+              dots-color="#54B5FF"
+              nav-color="#54B5FF"
+            />
+          </div>
+        </template>
       </template>
     </div>
   </div>

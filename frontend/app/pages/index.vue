@@ -13,7 +13,6 @@
 </template>
 
 <script setup lang="ts">
-  // Banner Data
   const banner = {
     eyebrow:  'Việc làm miền Bắc',
     title:    'Việc Làm Tốt - Cuộc Sống Tốt',
@@ -22,7 +21,6 @@
     ctaLink:  '/jobs',
   }
 
-  // First Sidebar Data
   const sidebar1VideoSrc = 'https://drive.vieclammienbac.com/download?id=5e6f3208-ec2d-42ef-8364-1428a85bb3b6'
   const sidebar1Images = [
     {
@@ -35,7 +33,6 @@
     },
   ]
 
-  // Second Sidebar Data
   const sidebar2VideoSrc = 'https://drive.vieclammienbac.com/download?id=3abe8991-75b6-4430-ac6e-08710a105232'
   const sidebar2Images = [
     {
